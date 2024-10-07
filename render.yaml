@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: math
+    name: anidesu-button-yuki
     env: python
     region: Oregon
     plan: free
