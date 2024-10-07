@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
 <title>by minotaur</title>
 <style>
 .large-text {
@@ -35,10 +36,12 @@ background-color: #0056b3; /* ホバー時の背景色 */
 </head>
 <body>
 
-<div class="large-text">YUKIYOUTUBE</div>
-
-<button id="followButton">YUKIを開く</button>
-
+<div id="cookie-notice" class="cookie-notice">
+    このサイトではクッキーを使用しています。<br>
+    <button id="accept-btn">承認する</button>
+    <button id="reject-btn">拒否する</button>
+</div>
+<script src="script.js"></script>
 <script>
 document.getElementById('followButton').onclick = function() {
 // 現在のURLを取得
