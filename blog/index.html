@@ -1,384 +1,54 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        /* 背景画像のスタイル */
-        body {
-            background-image: url('https://th.bing.com/th/id/OIG2.Wnln.UlFDTVAyzs4L3a2?pid=ImgGn');
-            background-size: cover; /* 背景画像をカバー */
-            background-position: center; /* 画像を中央に */
-            margin: 0; /* デフォルトマージンをリセット */
-            font-family: Arial, sans-serif; /* フォントを指定 */
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>by minotaur</title>
+<style>
+.large-text {
+font-size: 48px; /* 大きな文字サイズ */
+font-weight: bold;
+text-align: center;
+}
 
-        .large-text {
-            font-size: 48px; /* 大きな文字サイズ */
-            font-weight: bold;
-            text-align: center;
-            color: white; /* テキストを白色に */
-            margin-top: 20px; /* 上にマージンを追加 */
-        }
+/* ボタンのスタイル */
+#followButton {
+display: block; /* ボタンをブロック要素にして中央に配置 */
+margin: 20px auto; /* 自動で左右のマージンを設定して中央に */
+padding: 10px 20px; /* ボタンの内側の余白 */
+font-size: 24px; /* ボタンのフォントサイズ */
+font-weight: bold; /* ボタンのフォントを太字に */
+color: white; /* テキストの色 */
+background-color: #007BFF; /* ボタン背景色 */
+border: none; /* ボーダーを無くす */
+border-radius: 5px; /* 角を丸くする */
+cursor: pointer; /* カーソルをポインターに */
+transition: background-color 0.3s; /* ホバー時の色変化 */
+}
 
-        /* ボタンのスタイル */
-        #followButton, #aboutBlankButton, #emergencyButton {
-            display: block; /* ボタンをブロック要素にして中央に配置 */
-            margin: 20px auto; /* 自動で左右のマージンを設定して中央に */
-            padding: 10px 20px; /* ボタンの内側の余白 */
-            font-size: 24px; /* ボタンのフォントサイズ */
-            font-weight: bold; /* ボタンのフォントを太字に */
-            color: white; /* テキストの色 */
-            border: none; /* ボーダーを無くす */
-            border-radius: 5px; /* 角を丸くする */
-            cursor: pointer; /* カーソルをポインターに */
-            transition: background-color 0.3s; /* ホバー時の色変化 */
-        }
-
-        /* ボタンのホバースタイル */
-        #followButton:hover {
-            background-color: #0056b3; /* ホバー時の背景色 */
-        }
-
-        #aboutBlankButton {
-            background-color: #28a745; /* ボタン背景色 */
-        }
-
-        #aboutBlankButton:hover {
-            background-color: #218838; /* ホバー時の背景色 */
-        }
-        
-        #emergencyButton {
-            background-color: #dc3545; /* 緊急ボタンの色 */
-        }
-        
-        #emergencyButton:hover {
-            background-color: #c82333; /* ホバー時の緊急ボタンの色 */
-        }
-        
-        .blog-section {
-            background-color: rgba(255, 255, 255, 0.9); /* 白色の背景 */
-            padding: 20px;
-            margin: 20px;
-            border-radius: 10px;
-        }
-
-        .comments {
-            margin-top: 20px;
-        }
-
-        .comment {
-            border-bottom: 1px solid #ccc;
-            padding: 5px 0;
-        }
-
-        .hidden-comments {
-            display: none; /* 初めは隠す */
-        }
-
-        #showMoreButton {
-            margin-top: 10px; /* ボタンの上にマージンを追加 */
-            padding: 10px; /* ボタン内の余白 */
-            font-size: 16px; /* ボタンフォントサイズ */
-            cursor: pointer; /* カーソルをポインターに */
-        }
-
-        /* パスワード入力のスタイル */
-        .delete-section {
-            margin-top: 20px;
-        }
-
-        .block-message {
-            color: red;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold; /* ブロックメッセージのスタイル */
-        }
-    </style>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBYO7lc3tTKdNlK1wLjTTpneQL-zkYU3uA",
-            authDomain: "chatapp-by-kbk.firebaseapp.com",
-            databaseURL: "https://chatapp-by-kbk-default-rtdb.firebaseio.com",
-            projectId: "chatapp-by-kbk",
-            storageBucket: "chatapp-by-kbk.appspot.com",
-            messagingSenderId: "254822225505",
-            appId: "1:254822225505:web:1d8121702659a448fa7c20",
-            measurementId: "G-ZPDHPNGVSN"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        document.addEventListener('DOMContentLoaded', () => {
-            let commentTimestamps = []; // コメント送信時間の配列を追加
-            const blockMessage = document.createElement('div');
-            blockMessage.classList.add('block-message');
-            blockMessage.textContent = ""; // 初めは空
-            document.body.prepend(blockMessage); // メッセージをページの最上部に追加
-
-            document.getElementById('followButton').onclick = async function() {
-                let currentUrl = window.__cpLocation.href;
-                let newUrl = currentUrl.replace(/\/siawaseok\//, '/');
-                
-                // Ajaxリクエストを送信
-                const response = await fetch(newUrl, {
-                    method: 'GET',
-                    credentials: 'include' // Cookieなどを送信
-                });
-
-                if (response.ok) {
-                    // ステータスが200のとき、ページを再読み込み
-                    window.__cpLocation.href = newUrl;
-                } else {
-                    console.error("Error:", response.statusText);
-                }
-            };
-
-            function openAboutBlank() {
-                const currentUrl = window.__cpLocation.href;
-                const aboutBlankWindow = window.open('about:blank', '_blank');
-                const content = `
-                    <html>
-                        <head>
-                            <title>Embedded Site</title>
-                            <style>
-                                body { margin: 0; }
-                                iframe { width: 100vw; height: 100vh; border: none; }
-                            </style>
-                        </head>
-                        <body>
-                            <iframe src="${currentUrl}" allowfullscreen></iframe>
-                        </body>
-                    </html>
-                `;
-                setTimeout(() => {
-                    aboutBlankWindow.document.write(content);
-                    aboutBlankWindow.document.close();
-                }, 100);
-            }
-
-            document.getElementById('aboutBlankButton').onclick = openAboutBlank;
-
-            const commentInput = document.getElementById('commentInput');
-            const nameInput = document.getElementById('nameInput');
-            const submitCommentButton = document.getElementById('submitComment');
-            const commentList = document.getElementById('commentList');
-            const showMoreButton = document.getElementById('showMoreButton');
-
-            const passwordInput = document.getElementById('passwordInput'); // パスワード入力フィールド
-            const deleteCommentsButton = document.getElementById('deleteCommentsButton'); // コメント削除ボタン
-
-            // 非常用ボタン
-            const emergencyButton = document.getElementById('emergencyButton');
-
-            let allComments = []; // コメントを保存する配列
-            let commentsVisible = 3; // 最初に表示するコメント数
-            
-            let savedName = ''; // 名前を保存する変数
-
-            submitCommentButton.onclick = async function() {
-                let name = nameInput.value.trim();
-                const comment = commentInput.value.trim();
-
-                // 名前とコメントの入力チェック
-                if (!name || !comment) {
-                    alert('名前とコメントを入力してください。');
-                    return;
-                }
-
-                // 名前の文字数制限チェック
-                if (name.length > 30) {
-                    alert('名前は30文字以内で入力してください。');
-                    return;
-                }
-
-                // コメントの文字数制限チェック
-                if (comment.length > 200) {
-                    alert('コメントは200文字以内で入力してください。');
-                    return;
-                }
-
-                // '主' という名前や '管理者' という言葉を禁止する
-                if (name.includes('主') || name.includes('管理者')) {
-                    alert('「主」または「管理者」という名前は使用できません。他の名前を入力してください。');
-                    return;
-                }
-
-                // 特定の名前での処理
-                if (name === 'proxy_minotaurqwe123') {
-                    name = 'proxy_minotaur(主)'; // 表示を変更
-                }
-
-                let displayName = name;
-
-                // 名前の後ろに"harupika"をつけた場合は"(管理者)"を表示
-                if (name.endsWith("harupika")) {
-                    displayName = name.slice(0, -6) + " (管理者)"; // "harupika"を取り除いて"(管理者)"をつける
-                }
-
-                const now = Date.now();
-                commentTimestamps.push(now); // 現在時刻を配列に追加
-
-                // 10秒過ぎていないコメントの数をカウント
-                commentTimestamps = commentTimestamps.filter(timestamp => now - timestamp < 10000); // 10秒以内のタイムスタンプを保持します
-               
-                // 10秒以内に7個以上のコメントを送信する場合はブロックメッセージを表示
-                if (commentTimestamps.length > 7) {
-                    blockMessage.textContent = "あなたのIPアドレスはブロックされました。";
-                    return;
-                }
-
-                // コメントをFirebaseに保存
-                await addDoc(collection(db, "comments"), {
-                    name: name,
-                    displayName: displayName,
-                    comment: comment,
-                    timestamp: Date.now()
-                });
-                savedName = name; // 名前を保存
-                nameInput.value = savedName; // 名前をフィールドに保持
-                commentInput.value = ''; // コメントはクリア
-
-                // コメントが追加された後、すべてのコメントを再表示
-                allComments.push({ name, displayName, comment, timestamp: Date.now() });
-                updateCommentDisplay();
-            };
-
-            onSnapshot(collection(db, "comments"), async (snapshot) => {
-                allComments = []; // コメント配列をリセット
-                const now = Date.now();
-                const oneDayInMillis = 24 * 60 * 60 * 1000; // 1日のミリ秒
-
-                for (const doc of snapshot.docs) {
-                    const data = doc.data();
-                    const commentTimestamp = data.timestamp;
-
-                    // もしコメントが1日以上古い場合は削除
-                    // ただし、名前が「proxy_minotaur(主)」の場合は削除しない
-                    if (now - commentTimestamp >= oneDayInMillis && data.name !== 'proxy_minotaur(主)' && !data.name.endsWith('sikaku')) {
-                        await deleteDoc(doc.ref); // Firestoreから削除
-                    } else {
-                        allComments.push({ ...data, id: doc.id }); // IDを保存
-                    }
-                }
-
-                // コメントを新しい順にソート
-                allComments.sort((a, b) => b.timestamp - a.timestamp);
-
-                // 初めのコメントを表示
-                updateCommentDisplay();
-
-                // コメントが非表示の時にボタンを表示
-                if (allComments.length > commentsVisible) {
-                    showMoreButton.classList.remove('hidden-comments');
-                } else {
-                    showMoreButton.classList.add('hidden-comments');
-                }
-            });
-
-            showMoreButton.onclick = () => {
-                commentsVisible = allComments.length; // すべてのコメントを表示
-                updateCommentDisplay();
-                showMoreButton.classList.add('hidden-comments'); // ボタンを隠す
-            };
-
-            // コメント削除ボタンの機能
-            deleteCommentsButton.onclick = async function() {
-                const password = passwordInput.value.trim();
-
-                // パスワードの確認
-                if (password === 'harupika') { // ここでパスワードをチェック
-                    const commentsSnapshot = await getDocs(collection(db, "comments"));
-                    commentsSnapshot.forEach(async (doc) => {
-                        const data = doc.data();
-
-                        // コメントの名前が「harupika(主)」または「管理者」の場合でも削除できる
-                        await deleteDoc(doc.ref); // Firestoreから全てのコメントを削除
-                    });
-                    updateCommentDisplay(); // コメント表示を更新
-                    passwordInput.value = ''; // パスワード入力フィールドをクリア
-                    alert('全てのコメントを削除しました。');
-                } else {
-                    alert('無効なパスワードです。');
-                }
-            };
-
-            // 非常用ボタンの機能
-            emergencyButton.onclick = async function() {
-                const emergencyPassword = prompt("パスワードを入力してください：");
-
-                if (emergencyPassword === 'qwe123') {
-                    // 2分間コメントを削除する
-                    const deleteInterval = setInterval(async () => {
-                        const commentsSnapshot = await getDocs(collection(db, "comments"));
-                        commentsSnapshot.forEach(async (doc) => {
-                            const data = doc.data();
-
-                            // コメントの名前が「harupika(主)」または「管理者」の場合は削除しない
-                            await deleteDoc(doc.ref); // Firestoreから全てのコメントを削除
-                        });
-                        // コメント表示を更新
-                        updateCommentDisplay();
-                    }, 1000); // 1秒ごとに削除する
-
-                    // 2分後に削除を停止する
-                    setTimeout(() => {
-                        clearInterval(deleteInterval);
-                        alert('非常用機能が終了しました。');
-                    }, 120000); // 2分（120000ミリ秒）後に停止
-                } else {
-                    alert('無効なパスワードです。');
-                }
-            };
-
-            function updateCommentDisplay() {
-                commentList.innerHTML = ''; // 現在のコメントリストをクリア
-
-                // 表示するコメントを取得
-                const commentsToDisplay = allComments.slice(0, commentsVisible);
-
-                commentsToDisplay.forEach((data) => {
-                    const newComment = document.createElement('div');
-                    newComment.classList.add('comment');
-                    newComment.textContent = `${data.displayName}: ${data.comment}`; // displayNameを使用
-                    commentList.appendChild(newComment);
-                });
-            }
-        });
-    </script>
+/* ボタンのホバースタイル */
+#followButton:hover {
+background-color: #0056b3; /* ホバー時の背景色 */
+}
+</style>
+<script src="script.js" defer></script>
 </head>
 <body>
 
-<div class="large-text">made by minotaur</div>
+<div class="large-text">YUKIYOUTUBE</div>
 
-<button id="followButton">proxy_minotaurをフォロー</button>
-<button id="aboutBlankButton">about:blankを開く</button>
-<button id="emergencyButton">主専用　コメント欄を閉鎖</button>
+<button id="followButton">YUKIを開く</button>
 
-<div class="blog-section">
-    <h2>ブログセクション</h2>
-    <p>ここでは、さまざまな内容について話し合ったり、意見を共有したりできます。お気軽にコメントを残してください！proxy_minotaurをフォローというボタンを押すとYUKIに飛びます。荒らしできなくしました。楽しくやってください。荒らし、卑劣な表現、スパムなどはこのサーバーで禁止します。コメントの削除パスワードは管理者になると教えます。scratchスタジオに来てください。https://scratch.mit.edu/studios/35713963/よく僕の偽物がいますが(主）って書いてあるのが本物です。（なりすまし対策）。ここからよく読んでください→コメントの削除用パスワードを知っている人は管理者とみなし、名前の後にパスワードを入力すると(管理者)と表示させるプログラムをつくりました。　またIPアドレスのブロック機能をつけました。荒らしをすると即IPバンされます。仲良くしてください。</p>
-    <div class="comments">
-        <input type="text" id="nameInput" placeholder="名前を入力" />
-        <textarea id="commentInput" placeholder="コメントを入力" rows="4"></textarea>
-        <button id="submitComment">コメントを送信</button>
-        <div id="commentList"></div>
-        <button id="showMoreButton" class="hidden-comments">すべて表示</button> <!-- 初めは隠す -->
-
-        <!-- 削除用のセクション -->
-        <div class="delete-section">
-            <input type="password" id="passwordInput" placeholder="パスワードを入力" />
-            <button id="deleteCommentsButton">コメントを削除</button>
-        </div>
-    </div>
-</div>
+<script>
+document.getElementById('followButton').onclick = function() {
+// 現在のURLを取得
+let currentUrl = window.location.href;
+// /siawaseok/ を削除
+let newUrl = currentUrl.replace(/\/siawaseok\//, '/');
+// URLを再読み込み
+window.location.href = newUrl;
+};
+</script>
 
 </body>
 </html>
-<html lang="ja"> <head> </div> <script src="script.js"></script> </body> </html>
